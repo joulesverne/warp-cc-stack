@@ -1,0 +1,1 @@
+AStyle * --recursive -A7 -n
