@@ -5,7 +5,8 @@
  * @file hal_uart.c
  * @author Aaron Parks, UW Sensor Systems Laboratory
  * @version 1.0
-
+ *
+ * @todo Improve the modularity of the UART routines with macros, etc
  */
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -23,12 +24,12 @@ void HAL_UART_INIT( void )
 {
     HAL_ENTER_CRITICAL();
     UCA0CTL1 |= UCSWRST;
-    // UCA0CTL0 |= UCMSB;					//MSB first
+    // UCA0CTL0 |= UCMSB;				//MSB first
     UCA0CTL1 |= UCSSEL_2;				// SMCLK
     UCA0MCTL = UCBRS0;					// Modulation UCBRSx = 1
     UCA0BR0 = 104;						// Baud rate of 9600 (can change later)
     UCA0BR1 = 0;						// (UCA0BR0 + UCA0BR1 * 256 = UCBR)
-    P3SEL = 0x30;		                // P3.4,5 = USCI_A0 TXD/RXD
+    P3SEL |= BIT4 | BIT5;				// P3.4,5 = USCI_A0 TXD/RXD
     UCA0CTL1 &= ~UCSWRST;				// **Initialize USCI state machine**
     HAL_EXIT_CRITICAL();
 }
@@ -40,10 +41,11 @@ void HAL_UART_INIT( void )
  *
  * @param msg The string to be transmitted.
  * @param len The length of the string in bytes.
- *	@return Always returns HAL_SUCCESS
+ * @return Always returns HAL_SUCCESS
  *
- *	@todo Use TX interrupts when requested by user
- *	@todo Make modular with respect to UART module
+ * @pre SMCLK assumed to be 1 MHz
+ *
+ * @todo Use TX interrupts when requested by user
  *
  */
 int16_t HAL_UART_TX(uint8_t* msg, uint16_t len)
@@ -62,17 +64,6 @@ int16_t HAL_UART_TX(uint8_t* msg, uint16_t len)
 		while(UCA0STAT&UCBUSY);
 	}
 
+
 	return HAL_SUCCESS;
 }
-
-///////////////////////////////////////////////////////////////////////////////
-/**
-  * General timer ISR; counting time.
-  */
-
-#pragma vector=TIMERB0_VECTOR
-__interrupt void HAL_TMB_ISR( void )
-{
-    HAL_time_periods++;
-}
-//*/

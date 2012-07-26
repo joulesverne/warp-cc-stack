@@ -37,10 +37,10 @@ enum RADIO_state_e // Tracks expected current state of radio
 uint8_t RADIO_rxNewData;
 
 ///////////////////////////////////////////////////////////////////////////////
-// Macros
+/// Macros
 ///////////////////////////////////////////////////////////////////////////////
 // Compute delay to use after ~CS low edge based on current radio state
-#define RADIO_CS_DLY()	((RADIO_state==RADIO_STATE_SLEEP) ? 5 : 0)
+#define RADIO_CS_DLY()	((RADIO_state==RADIO_STATE_SLEEP) ? RADIO_CS_DLY_TIME : 0)
 
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -71,7 +71,7 @@ int16_t RADIO_INIT( void )
     while(BSP_SPI_PIN & BSP_SPI_SOMI_BIT);
 
     // Reset the radio. Assumes the radio has just powered on and is IDLE.
-    HAL_SPI_STROBE(CC2500_SRES, 0); //@todo make a macro for strobe values (better portability)
+    HAL_SPI_STROBE(CC2500_SRES, 0); /// @todo make a macro for strobe values (better portability)
 
     // Wait for reset to complete (hold on a HI SOMI line).
     while(BSP_SPI_PIN & BSP_SPI_SOMI_BIT);
@@ -80,7 +80,7 @@ int16_t RADIO_INIT( void )
     //	It's faster to transmit all registers than to hop btwn necessary ones.
     HAL_SPI_WRITE((RADIO_REG_BLOCK_START | CC2500_WRITE_BURST), (uint8_t*)RADIO_REG_SETTINGS, RADIO_REG_BLOCK_LEN, 0);
 
-    // @todo Make sure radio is idle at this point
+    /// @todo Make sure radio is idle at this point
 
     // Clear newData flag
     RADIO_rxNewData = 0;
@@ -103,7 +103,7 @@ int16_t RADIO_SETUP_RX( void (*rxCallback)(void) )
 
     // Configure GDO line to produce an edge upon received data.
     //	Already configured in RADIO_INIT() register configuration.
-    // @todo If CRC enabled, config GDO to produce edge only on good CRC.
+    /// @todo If CRC enabled, config GDO to produce edge only on good CRC.
 
     // Configure interrupting on proper GDO signal.
     BSP_GDO_PIES |= BSP_GDO0_BIT; // Interrupt on falling edge of Sync signal
@@ -176,8 +176,6 @@ uint16_t RADIO_RECEIVE( uint8_t* dest, uint8_t* nwkID, uint8_t* txID)
     // Exit critical, allowing for buffer to be written to.
     HAL_EXIT_CRITICAL();
 
-    // @todo Handle RX timeout termination
-
     // Return length of payload received
     return RADIO_PAY_LEN;
 }
@@ -195,7 +193,7 @@ int16_t RADIO_SET_TX_PWR( uint8_t pwr )
     // Write new setting to appropriate register in PA TABLE.
     HAL_SPI_WRITE((CC2500_PATABLE | CC2500_WRITE_SINGLE), &pwr, 1, RADIO_CS_DLY());
 
-    // @todo Is this the correct state transition logic?
+    /// @todo Is this the correct state transition logic?
 
     // If we've woken up the radio, it will stay in Idle state.
     if(RADIO_STATE_SLEEP == RADIO_state)
@@ -209,54 +207,58 @@ int16_t RADIO_SET_TX_PWR( uint8_t pwr )
   * Packet format = {RADIO_NWK_ID, RADIO_DEV_ID, {Static Size Payload}}
   * Currently only supports statically sized payload.
   *
+  * @pre The radio needs to be in IDLE mode and recently calibrated.
+  *
   * @param msg a pointer to the array containing the payload
   * @return RADIO_SUCCESS if everything worked properly, RADIO_FAIL if not.
   *
-  * @todo Test this function
+  * @note As written, this function may return before the radio completes transmission.
   */
 int16_t RADIO_TX( uint8_t* msg )
 {
     int i;
 
     // Copy header data into txBuf
-    RADIO_txBuf[0] = RADIO_NWK_ID; 	// @todo Do these assignments during init (once only)
+    RADIO_txBuf[0] = RADIO_NWK_ID; 	/// @todo Do these assignments during init (once only)
     RADIO_txBuf[1] = RADIO_DEV_ID;
 
     // Copy payload data into txBuf
-    // @todo Do this without a string copy...
+    /// @todo Do this without a string copy...
     for(i = RADIO_HDR_LEN; i < RADIO_PKT_LEN; i++ )
         {
             RADIO_txBuf[i] = msg[i-RADIO_HDR_LEN];
         }
 
     // Flush TX FIFO buffer
-    // @todo Determine if this is needed
+    /// @todo Determine if this is needed
     HAL_SPI_STROBE(CC2500_SFTX, RADIO_CS_DLY());
 
-    //@todo: Load all data from user buffer into the radio TX FIFO via SPI.
+    /// @todo: Load all data from user buffer into the radio TX FIFO via SPI.
     //		Use SPI block write for this.
     HAL_SPI_WRITE((CC2500_TXFIFO | CC2500_WRITE_BURST), RADIO_txBuf, RADIO_PKT_LEN, 0);
 
-    //@todo: Go into TX mode and transmit the data!
+    /// @todo: Go into TX mode and transmit the data!
 
     HAL_SPI_STROBE(CC2500_STX, 0);
 
-    //@todo Wait for transmission to complete??
+    /// @todo Wait for transmission to complete??
     // Wait for GDO2 to go HI and LO again indicating TX has finished.
     // Only works when GDO2 IOCFG is set to 0x06.
     while(BSP_GDO_PIN & BSP_GDO2_BIT);
 
-    //@todo: If CCA is enabled, watch for a CCA failure.
+    /// @todo: If CCA is enabled, watch for a CCA failure.
     //		Do NOT try again on CCA fail.
 
     // Update local state variable
     // Assuming radio is configured to IDLE after transmit is complete.
     RADIO_state = RADIO_STATE_IDLE;
 
+    /// @todo: Go into a low-power mode here until the transmission has completed, IF the user desires it.
+
     return RADIO_SUCCESS;
 }
 
-/*
+/**
  * Command the radio to perform manual frequency synth calibration routine.
  * Blocks until calibration is complete (~720 us for CC2500).
  *
@@ -269,7 +271,7 @@ int16_t RADIO_CALIBRATE( void )
     // Send command strobe
     HAL_SPI_STROBE(CC2500_SCAL, RADIO_CS_DLY());
 
-    // @todo Delay for calibration time
+    /// @todo Delay for calibration time
     HAL_PRECISE_DELAY(24); // 30.5us*24 > 721 us (calibration time from datasheet).
 
     // Update local state variable
@@ -318,10 +320,11 @@ int16_t RADIO_IDLE( void )
 }
 
 /**
- * Interrupt vector for GDO pins. Performs rxCallback when data received.
+ * Interrupt vector for receive interrupt from radio. Performs rxCallback when data received.
  *
- * @todo Rigorously test this function
  * @todo Don't allow through any packets which fail CRC!!
+ * @todo It's not good if this ISR executes while other routines are talking to the radio.
+
  */
 #pragma vector=BSP_GDO_VECTOR
 __interrupt void RADIO_GDO_ISR ( void )

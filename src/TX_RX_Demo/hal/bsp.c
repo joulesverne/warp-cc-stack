@@ -11,7 +11,7 @@
  */
 
 ///////////////////////////////////////////////////////////////////////////////
-// Includes
+/// Includes
 ///////////////////////////////////////////////////////////////////////////////
 #include "bsp.h"		// BSP configuration data and referenced functions
 ///////////////////////////////////////////////////////////////////////////////
@@ -26,19 +26,17 @@
 void BSP_INIT( void )
 {
     // LEDs
-    BSP_LED_POUT &= ~(BSP_LED_0_BIT | BSP_LED_1_BIT);
-    BSP_LED_PDIR |= BSP_LED_0_BIT | BSP_LED_1_BIT;
+	BSP_LED_POUT &= ~(BSP_LED_0_BIT | BSP_LED_1_BIT);
+	BSP_LED_PDIR |= BSP_LED_0_BIT | BSP_LED_1_BIT;
 
     // SPI
-    BSP_SPI_POUT 	&= 	~(BSP_SPI_SIMO_BIT | BSP_SPI_CLK_BIT | BSP_SPI_CS_BIT);
-    //DEBUG: The code below would force to turn on the radio, this should only be done when needed.
-    //BSP_SPI_POUT 	|=	BSP_SPI_CS_BIT;
+	BSP_SPI_POUT 	&= 	~(BSP_SPI_SIMO_BIT | BSP_SPI_CLK_BIT | BSP_SPI_CS_BIT);
     BSP_SPI_PDIR 	|= 	BSP_SPI_CS_BIT;
-    BSP_SPI_PSEL	|=	BSP_SPI_SIMO_BIT | BSP_SPI_SOMI_BIT | BSP_SPI_CLK_BIT;
+	BSP_SPI_PSEL	|=	BSP_SPI_SIMO_BIT | BSP_SPI_SOMI_BIT | BSP_SPI_CLK_BIT;
 
     // GDO
-    BSP_GDO_PSEL	&= ~(BSP_GDO0_BIT | BSP_GDO2_BIT);
-    BSP_GDO_PDIR	&= ~(BSP_GDO0_BIT | BSP_GDO2_BIT);
+	BSP_GDO_PSEL	&= ~(BSP_GDO0_BIT | BSP_GDO2_BIT);
+	BSP_GDO_PDIR	&= ~(BSP_GDO0_BIT | BSP_GDO2_BIT);
 
 }
 
@@ -68,7 +66,7 @@ uint16_t BSP_SAMPLE_SUPPLY( void )
 
 
 /**
- * A blocking power management functino. Go to sleep, periodically wake
+ * A blocking power management function. Go to sleep, periodically wake
  * and check supply voltage. If supply voltage is over the given threshold,
  * resume program execution.
  *
@@ -79,13 +77,14 @@ uint16_t BSP_SAMPLE_SUPPLY( void )
  */
 uint16_t BSP_WAKE_ON_VOLTAGE( uint16_t vWake )
 {
-    while(1)
-        {
-            HAL_LONG_DELAY(BSP_SLEEP_TIME);
-            if(BSP_SAMPLE_SUPPLY() > vWake)
-                {
-                    return ADC10MEM;
-                }
-        }
+//    while(1)
+//        {
+//            HAL_LONG_DELAY(BSP_SLEEP_TIME);
+//            if(BSP_SAMPLE_SUPPLY() > vWake)
+//                {
+//                    return ADC10MEM;
+//                }
+//        }
+	return 0;
 }
 

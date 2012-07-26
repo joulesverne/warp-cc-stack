@@ -28,9 +28,8 @@ void HAL_INIT( void )
     WDTCTL = WDTPW | WDTHOLD;
 
     // Set up the clock for 1 MHz
-    // @todo Try various clock frequencies...
-    BCSCTL1 |= CALBC1_1MHZ;
-    DCOCTL = CALDCO_1MHZ;
+    BCSCTL1 = 	CALBC1_1MHZ;
+    DCOCTL = 	CALDCO_1MHZ;
 
 #if(BSP_HAS_CRYSTAL)
     //Choose 32.768kHz watch crystal as AMCLK source
@@ -44,7 +43,7 @@ void HAL_INIT( void )
     // @todo Setup the crystal capacitance regs
     // @todo Initialize the delay timer peripheral
     HAL_SPI_INIT();
-    //HAL_UART_INIT();
+
     HAL_ENABLE_INTERRUPTS();
 }
 

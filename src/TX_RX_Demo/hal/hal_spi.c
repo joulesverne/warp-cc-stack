@@ -10,12 +10,12 @@
  */
 
 ///////////////////////////////////////////////////////////////////////////////
-// Includes
+/// Includes
 ///////////////////////////////////////////////////////////////////////////////
 #include "hal.h"			// HAL configuration and other HAL functions
 
 ///////////////////////////////////////////////////////////////////////////////
-// Local prototypes
+/// Local prototypes
 ///////////////////////////////////////////////////////////////////////////////
 
 // Send byte and wait for TX to finish
@@ -74,11 +74,11 @@ void HAL_SPI_INIT( void )
  * Reads the given number of characters from the given location of the
  * connected SPI slave device.
  *
- * @param addr The address from which to read
- * @param len The number of bytes to read
- * @param rxBytePtr Pointer to the receive array
- * @param dly		The number of ticks to wait after lowering ~CS line
- *	@return The return code from the first SPI transaction
+ * @param 	addr 		The address from which to read
+ * @param 	len 		The number of bytes to read
+ * @param	rxBytePtr 	Pointer to the receive array
+ * @param 	dly			The number of ticks to wait after lowering ~CS line
+ * @return 	The return code from the first SPI transaction
  *
  */
 uint8_t HAL_SPI_READ(uint8_t addr, uint8_t* rxBytePtr, uint8_t len, uint16_t dly)
@@ -179,7 +179,7 @@ uint8_t HAL_SPI_STROBE(uint8_t strobeCmd, uint16_t dly)
  *
  * @param txByte The byte to send
  *
- * @todo Re-Implement the wait using hardware delay and LPM3
+ * @todo Use interrupts here
  */
 void HAL_SPI_TX_WAIT( uint8_t txByte )
 {
@@ -187,13 +187,11 @@ void HAL_SPI_TX_WAIT( uint8_t txByte )
 
     while(UCB0STAT & UCBUSY);
 
-    //@todo	This may actually not work, because other ISRs will run as soon as we enable interrupts.?
-
     //HAL_LPM1_SLEEP();
 }
 
 /**
- * Pull the ~CS line LO to start a transaction, and delay if needed.
+ * Pull the ~CS line LOW to start a transaction, and delay if needed.
  * @param dly		The number of ticks to wait after lowering ~CS line
  */
 void HAL_SPI_CSN_LO( uint16_t dly )

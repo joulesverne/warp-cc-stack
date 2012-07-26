@@ -3,7 +3,7 @@
  * 			IC series from TI.
  *
  * Low-power radio communications functions for use with CC2500, 1101, etc
- * from Texas Instruments (via Chipcon). Designed for minimum network overhead
+ * from Texas Instruments (via Chipcon). Designed for minimum overhead
  * and minimal energy usage wherever possible.
  *
  * @file radio.h
@@ -18,7 +18,7 @@
 /*---------------------------------------------------------------------------*/
 
 ///////////////////////////////////////////////////////////////////////////////
-// Packet sizing information
+/// Packet sizing information
 ///////////////////////////////////////////////////////////////////////////////
 
 // Radio packet header length
@@ -27,15 +27,19 @@
 // Transmitted/received packet size in bytes {HDR, PAYLOAD}
 #define RADIO_PKT_LEN	RADIO_HDR_LEN + RADIO_PAY_LEN
 
+// Number of low-power timer cycles for radio to wake from sleep mode after
+//	CS line pulled low.
+#define	RADIO_CS_DLY_TIME	5
+
 ///////////////////////////////////////////////////////////////////////////////
-// Return status definitions
+/// Return status definitions
 ///////////////////////////////////////////////////////////////////////////////
 #define RADIO_SUCCESS 	0	// Successful completion of function
 #define RADIO_FAIL		1	// Non-specific failure occurred
 #define RADIO_CCA_FAIL 	2	// Clear channel assessment failed
 
 ///////////////////////////////////////////////////////////////////////////////
-// Includes
+/// Includes
 ///////////////////////////////////////////////////////////////////////////////
 #include "../config/config.h"// Platform-specific definitions
 #include "../hal/hal.h" 	// Hardware abstraction layer functions
@@ -44,7 +48,7 @@
 
 
 ///////////////////////////////////////////////////////////////////////////////
-// Prototypes
+/// Prototypes
 ///////////////////////////////////////////////////////////////////////////////
 
 // Initialize the radio with default settings, and leave it in Idle state.

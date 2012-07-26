@@ -6,7 +6,7 @@
  */
 
 ///////////////////////////////////////////////////////////////////////////////
-// Includes
+/// Includes
 ///////////////////////////////////////////////////////////////////////////////
 #include "hal.h"			// HAL configuration and other HAL functions
 ///////////////////////////////////////////////////////////////////////////////
@@ -39,7 +39,7 @@ void HAL_PRECISE_DELAY(uint16_t ticks)
 }
 
 /**
- * Wait for the specified period of time using the VLO (Very Low-frequency Oscillator).
+ * Wait for the specified period of time using the VLO (Very Low-freq Oscillator).
  * This function should not be used in an ISR context. Use this for longer
  * delays where low precision timing is required.
  *
