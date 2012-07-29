@@ -10,10 +10,20 @@
  */
 
 ///////////////////////////////////////////////////////////////////////////////
-// Includes
+/// Includes
 ///////////////////////////////////////////////////////////////////////////////
 #include "hal.h"			// HAL configuration and other HAL functions
 #include <stdio.h>
+
+
+///////////////////////////////////////////////////////////////////////////////
+/// Local definitions
+///////////////////////////////////////////////////////////////////////////////
+
+#define	HAL_UART_ESCAPE_CHAR		0x00
+#define	HAL_UART_ESC_NEWFRAME_CHAR	0x01
+#define HAL_UART_ESC_ESCAPE_CHAR	0x02
+
 ///////////////////////////////////////////////////////////////////////////////
 
 /**
@@ -66,4 +76,46 @@ int16_t HAL_UART_TX(uint8_t* msg, uint16_t len)
 
 
 	return HAL_SUCCESS;
+}
+
+/**
+ * Formats data for transmission via a serial link. Escape sequences are used to setup
+ * frame headers and other stuff.
+ * @param dst	Destination for formatted array with size at least (2*sizeof(src) + 2)
+ * @param src	Raw source material
+ * @param len	Length of the source array
+ * @return	The length of the destination buffer
+ */
+
+uint16_t HAL_UART_FORMATTER(uint8_t* dst, uint8_t* src, uint16_t len)
+{
+	uint16_t s_i; // Index in source buffer
+	uint16_t d_i; // Index in destination buffer
+
+	s_i = d_i = 0;
+
+	// Escape sequence for new frame
+	dst[d_i++] = HAL_UART_ESCAPE_CHAR;
+	dst[d_i++] = HAL_UART_ESC_NEWFRAME_CHAR;
+
+	for(s_i=0;s_i<len;s_i++)
+	{
+		switch(src[s_i])
+		{
+			case HAL_UART_ESCAPE_CHAR:
+				// Escape sequence required to escape the escape character...
+				dst[d_i++] = HAL_UART_ESCAPE_CHAR;
+				dst[d_i++] = HAL_UART_ESC_ESCAPE_CHAR;
+				break;
+
+
+			default:
+				// Normal characters
+				dst[d_i++] = src[s_i];
+				break;
+		}
+	}
+
+	return d_i; // Index has already been post-inc'ed past last char in array.
+
 }

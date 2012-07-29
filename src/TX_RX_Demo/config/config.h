@@ -39,7 +39,7 @@
 #define RADIO_DEV_ID		0x77// This device address
 
 // Transmit packet payload length
-#define RADIO_PAY_LEN	6 // "Hello\n"
+#define RADIO_PAY_LEN		3	// {{Sensor ID}, {MSB}, {LSB}}
 
 // Essential transmit/receive settings
 #define RADIO_USE_FEC		TRUE

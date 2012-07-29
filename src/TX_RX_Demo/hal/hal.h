@@ -126,6 +126,8 @@ uint8_t HAL_SPI_STROBE(uint8_t strobeCmd, uint16_t dly);
 void HAL_UART_INIT( void );
 // UART transmit functions
 int16_t HAL_UART_TX(uint8_t* msg, uint16_t len);
+// Packet formatter for sending data via UART
+uint16_t HAL_UART_FORMATTER(uint8_t* dst, uint8_t* src, uint16_t len);
 
 
 ///////////////////////////////////////////////////////////////////////////////

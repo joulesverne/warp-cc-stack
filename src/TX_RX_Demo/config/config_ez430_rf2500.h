@@ -83,10 +83,9 @@
 /// Global defines for customized application
 ///////////////////////////////////////////////////////////////////////////////
 //#define BSP_WAKEUP_V		 1.9					//wake up voltage from sleep moed
-#define BSP_WAKEUP_VSENSE 	((BSP_WAKEUP_V-0.8)/3)  //Actually voltage sensed by ADC10
-#define BSP_SUPPLY_V 		128//1023*BSP_WAKEUP_VSENSE/1.5
-#define BSP_INCH 1			//Sensor input channel for ADC input
-#define BSP_SLEEP_TIME 10000 // cycles for board to check power supply in sleep mode
+//#define BSP_WAKEUP_VSENSE 	((BSP_WAKEUP_V-0.8)/3)  //Actually voltage sensed by ADC10
+//#define BSP_SUPPLY_V 		128//1023*BSP_WAKEUP_VSENSE/1.5
+//#define BSP_SLEEP_TIME 		10000 // cycles for board to check power supply in sleep mode
 
 ///////////////////////////////////////////////////////////////////////////////
 #endif /* CONFIG_PLATFORM_SPECIFIC */

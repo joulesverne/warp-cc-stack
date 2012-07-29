@@ -15,6 +15,7 @@
 #include "hal/hal.h"
 #include "hal/bsp.h"
 #include "radio/radio.h"
+#include "sensor_id.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 /// Defines
@@ -25,6 +26,8 @@
 /// Globals
 ///////////////////////////////////////////////////////////////////////////////
 uint8_t rxBuf[RADIO_PAY_LEN]; 					// Receive buffer
+uint8_t msgBuf[2*RADIO_PAY_LEN + 2];			// UART message buffer
+uint16_t msgLen;								// Length of UART message
 uint8_t calibrateSem;
 
 
@@ -40,7 +43,6 @@ uint16_t badBitCount(uint8_t* str1, uint8_t* str2, uint16_t len);
 /**
  * Entry point for demo receiver application
  *
- * @todo Calibrate the radio every once in a while
  * @todo Debug periodic packet drop issues
  * @todo Verify arbitrary-length packet receive mode
  */
@@ -70,6 +72,8 @@ void main( void )
 
     // WDT Throws interrupt every ACLK/32,768 seconds
     WDTCTL = WDT_ADLY_1000 | WDTPW;
+    IFG1 &= ~WDTIFG;
+    IE1 |= WDTIE;
 
     // Wait for receive.
     while(1);
@@ -97,7 +101,8 @@ void dataReceived()
             		BSP_LED1_TOGGLE();
 
             		// Send payload via UART
-                    HAL_UART_TX(rxBuf,RADIO_PAY_LEN);
+            		msgLen = HAL_UART_FORMATTER(msgBuf, rxBuf, RADIO_PAY_LEN);
+                    HAL_UART_TX(msgBuf,msgLen);
                 }
         }
 
@@ -112,6 +117,7 @@ void dataReceived()
 __interrupt void WDT_ISR(void) {
 
 		calibrateAndRestartRX(&calibrateSem);
+		IFG1 &= ~WDTIFG;
 }
 
 /**
