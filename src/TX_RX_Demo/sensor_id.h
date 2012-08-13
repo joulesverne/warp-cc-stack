@@ -17,8 +17,8 @@
 /// Sensor ID enumeration
 ///////////////////////////////////////////////////////////////////////////////
 #define	SENSOR_ID_TEMP	0x00u
-#define	SENSOR_ID_CO	0x01u
-#define	SENSOR_ID_LIGHT	0x02u
+#define	SENSOR_ID_PHOTO	0x01u
+#define	SENSOR_ID_CO	0x02u
 #define SENSOR_ID_H2S	0x03u
 
 

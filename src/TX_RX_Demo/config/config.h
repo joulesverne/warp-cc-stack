@@ -15,7 +15,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 //	Platform-specific includes
 ///////////////////////////////////////////////////////////////////////////////
-#include "config_ez430_rf2500.h"
+#include "config_warp_rev1.h"
 #include "cc2500.h"
 #include "smartrf_CC2500.h"
 
@@ -39,7 +39,7 @@
 #define RADIO_DEV_ID		0x77// This device address
 
 // Transmit packet payload length
-#define RADIO_PAY_LEN		3	// {{Sensor ID}, {MSB}, {LSB}}
+#define RADIO_PAY_LEN		6	// {{Sensor 1 ID}, {MSB1}, {LSB1}, {Sensor 2 ID}, {MSB2}, {LSB2}}
 
 // Essential transmit/receive settings
 #define RADIO_USE_FEC		TRUE

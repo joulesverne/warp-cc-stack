@@ -1,8 +1,9 @@
 /**
- * @brief Platform-specific IO assignments and other info for the ez430-RF2500
+ * @brief Platform-specific IO assignments and other info for the WARP rev1
+ * 			platform
  *
  *
- * @file config_ez430_rf2500.h
+ * @file config_warp_rev1
  * @author Aaron Parks, UW Sensor Systems Laboratory
  * @version 1.0
  */
@@ -22,20 +23,20 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 // GDO Port(s)
-#define BSP_GDO_PDIR			P2DIR
-#define BSP_GDO_PSEL			P2SEL
-#define BSP_GDO_POUT			P2OUT
-#define BSP_GDO_PIN				P2IN
-#define BSP_GDO_PIE				P2IE
-#define BSP_GDO_PIFG			P2IFG
-#define BSP_GDO_PIES			P2IES
+#define BSP_GDO_PDIR			P1DIR
+#define BSP_GDO_PSEL			P1SEL
+#define BSP_GDO_POUT			P1OUT
+#define BSP_GDO_PIN				P1IN
+#define BSP_GDO_PIE				P1IE
+#define BSP_GDO_PIFG			P1IFG
+#define BSP_GDO_PIES			P1IES
 
 // GDO Pins
-#define BSP_GDO0_BIT			BIT6
-#define BSP_GDO2_BIT			BIT7
+#define BSP_GDO0_BIT			BIT2
+#define BSP_GDO2_BIT			BIT3
 
 // GDO Port interrupt vector
-#define BSP_GDO_VECTOR			PORT2_VECTOR
+#define BSP_GDO_VECTOR			PORT1_VECTOR
 
 // LED Port
 #define BSP_LED_PDIR			P1DIR
@@ -57,16 +58,31 @@
 #define BSP_SPI_SOMI_BIT		BIT2
 #define BSP_SPI_CLK_BIT			BIT3
 
+// Power Management Pins
+#define BSP_LDO_HOLD_PDIR		P4DIR
+#define BSP_LDO_HOLD_POUT		P4OUT
+#define BSP_LDO_HOLD_BIT		BIT4
+
+// Photosensor
+#define BSP_PHOTO_PWR_POUT		P1OUT
+#define BSP_PHOTO_PWR_PDIR		P1DIR
+#define BSP_PHOTO_PWR_BIT		BIT6
+#define BSP_PHOTO_ADC_PDIR		P3DIR
+#define BSP_PHOTO_ADC_BIT		BIT7
+
+
 // Watch crystal
 #define BSP_HAS_XTAL			0
 //#define BSP_XTAL_PSEL			P1SEL
-//#define BSP_XIN					BIT0
+//#define BSP_XIN				BIT0
 //#define BSP_XOUT				BIT1
 
 ///////////////////////////////////////////////////////////////////////////////
 /// IO Setup macros
 ///////////////////////////////////////////////////////////////////////////////
-#define POWER_MANAGEMENT_SETUP() // None required for this board.
+#define POWER_MANAGEMENT_SETUP() \
+			BSP_LDO_HOLD_POUT |= BSP_LDO_HOLD_BIT;\
+			BSP_LDO_HOLD_PDIR |= BSP_LDO_HOLD_BIT;
 
 #define	BSP_PIN_SETUP() \
 			BSP_LED_POUT &= ~(BSP_LED_0_BIT | BSP_LED_1_BIT);\
@@ -75,7 +91,16 @@
 			BSP_SPI_PDIR 	|= 	BSP_SPI_CS_BIT;\
 			BSP_SPI_PSEL	|=	BSP_SPI_SIMO_BIT | BSP_SPI_SOMI_BIT | BSP_SPI_CLK_BIT;\
 			BSP_GDO_PSEL	&= ~(BSP_GDO0_BIT | BSP_GDO2_BIT);\
-			BSP_GDO_PDIR	&= ~(BSP_GDO0_BIT | BSP_GDO2_BIT)
+			BSP_GDO_PDIR	&= ~(BSP_GDO0_BIT | BSP_GDO2_BIT);\
+			BSP_PHOTO_PWR_POUT &= ~(BSP_PHOTO_PWR_BIT);\
+			BSP_PHOTO_PWR_PDIR |= (BSP_PHOTO_PWR_BIT);\
+			BSP_PHOTO_ADC_PDIR &= ~(BSP_PHOTO_ADC_BIT)
+
+#define BSP_PHOTO_ENABLE() \
+			BSP_PHOTO_PWR_POUT |= BSP_PHOTO_PWR_BIT
+
+#define BSP_PHOTO_DISABLE() \
+			BSP_PHOTO_PWR_POUT &= ~(BSP_PHOTO_PWR_BIT)
 
 ///////////////////////////////////////////////////////////////////////////////
 /// ADC Supply Sensing Result conversions

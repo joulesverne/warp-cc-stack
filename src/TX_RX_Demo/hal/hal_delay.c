@@ -11,8 +11,8 @@
 #include "hal.h"			// HAL configuration and other HAL functions
 ///////////////////////////////////////////////////////////////////////////////
 /**
- * Long delay; Blocks for the given number of ticks of a 32,768 Hz
- * RTC crystal. Good for longer delays where high precision timing
+ * Blocks for the given number of ticks of a 32,768 Hz RTC crystal.
+ * Good for longer delays where high precision timing
  * is required.
  *
  * @param ticks ticks/32,768 = time delay in seconds.

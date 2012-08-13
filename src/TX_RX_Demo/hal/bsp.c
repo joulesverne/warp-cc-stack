@@ -18,26 +18,16 @@
 
 /**
  * Initializes all external peripherals and board features
- *
- * @todo SPI/LEDs implemented. Add additional needed port config settings.
- * @todo Test SPI/LED port control
- * @todo Compress this into one assignment per register.
  */
 void BSP_INIT( void )
 {
-    // LEDs
-	BSP_LED_POUT &= ~(BSP_LED_0_BIT | BSP_LED_1_BIT);
-	BSP_LED_PDIR |= BSP_LED_0_BIT | BSP_LED_1_BIT;
+	// Run critical power management system init if defined
+	POWER_MANAGEMENT_SETUP();
 
-    // SPI
-	BSP_SPI_POUT 	&= 	~(BSP_SPI_SIMO_BIT | BSP_SPI_CLK_BIT | BSP_SPI_CS_BIT);
-    BSP_SPI_PDIR 	|= 	BSP_SPI_CS_BIT;
-	BSP_SPI_PSEL	|=	BSP_SPI_SIMO_BIT | BSP_SPI_SOMI_BIT | BSP_SPI_CLK_BIT;
+	// Board-specific configuration
+	BSP_PIN_SETUP();
 
-    // GDO
-	BSP_GDO_PSEL	&= ~(BSP_GDO0_BIT | BSP_GDO2_BIT);
-	BSP_GDO_PDIR	&= ~(BSP_GDO0_BIT | BSP_GDO2_BIT);
-
+	///@todo Add any additional peripheral config here
 }
 
 
